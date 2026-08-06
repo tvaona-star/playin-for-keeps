@@ -59,7 +59,10 @@ export default function Rules({ data }) {
 
         {penalties.length > 0 && (
           <>
-            <div className="subhead">{discipline.heading}</div>
+            <div className="subhead">
+              {discipline.heading}
+              {discipline.rule && ` · rule ${discipline.rule}`}
+            </div>
             <div className="card discipline">
               <p className="disc-note">{discipline.note}</p>
               {penalties.map((p, i) => (

@@ -20,7 +20,7 @@ export const MAX_KEEPERS = 4
  * Assign draft rounds to the chosen players.
  *
  * Order of operations:
- *   1. Commissioner discipline (rules 10/13) — a keeper-round penalty hits the
+ *   1. Commissioner discipline (rule 10) — a keeper-round penalty hits the
  *      keeper with the LATEST round, making it cost that many rounds earlier.
  *   2. Rule 9 same-round bump cascade.
  *

@@ -30,7 +30,12 @@ export default function App() {
           </div>
           <div className="appbar-spacer" />
           {data && (
-            <div className="season"><i />Planning <b>{data.meta.season}</b> keepers</div>
+            <div className="season" title={`Planning ${data.meta.season} keepers`}>
+              <i />
+              <span className="season-long">Planning&nbsp;</span>
+              <b>{data.meta.season}</b>
+              <span className="season-long">&nbsp;keepers</span>
+            </div>
           )}
           <button className="theme-btn" onClick={toggle} title="Toggle light / dark" aria-label="Toggle theme">◐</button>
         </div>
