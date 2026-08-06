@@ -90,6 +90,11 @@ Edge cases the engine flags for commissioner review appear in the console
 - `history.json` — keeper archive 2019-2025 transcribed from the league tracker.
 - `champions.json` — title history 2017-present.
 - `owners.json` — Sleeper display names ↔ real names.
+- `discipline.json` — commissioner discipline (rules 10 & 13), keyed by the
+  season the penalty applies to. A `keeper_round` penalty with
+  `target: "latest_round"` makes that manager's latest-round keeper cost N
+  rounds earlier; it is shown on the League Rules page and enforced live in the
+  Keeper Planner.
 
 After each season: add the new keeper year to `history.json` and the champion to
 `champions.json`.

@@ -227,6 +227,14 @@ select:focus-visible,.tab:focus-visible,button:focus-visible,.prow:focus-visible
 .rule p{margin:0;font-size:14px;color:var(--ink);line-height:1.5;}
 .rule.hilite .rn{background:var(--gold);color:#1a1400;}
 
+/* Commissioner discipline */
+.discipline{border-color:var(--bad);}
+.disc-note{margin:0;padding:15px 18px 12px;font-size:13.5px;color:var(--ink-2);border-bottom:1px solid var(--border);}
+.disc-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:13px 18px;border-bottom:1px solid var(--border);}
+.disc-owner{font-weight:700;font-size:14px;min-width:120px;}
+.disc-reason{flex:1;min-width:180px;color:var(--ink-2);font-size:13px;}
+.disc-foot{margin:0;padding:12px 18px 14px;font-size:12px;color:var(--ink-3);}
+
 /* Admin */
 .admin-wrap{max-width:480px;margin:0 auto;}
 .lock{width:54px;height:54px;border-radius:15px;background:var(--surface-3);display:grid;place-items:center;font-size:24px;margin:0 auto 14px;}

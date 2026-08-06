@@ -1,0 +1,23 @@
+{
+  "_comment": "Commissioner discipline under rules 10 & 13. Keyed by the season the penalty APPLIES to. target 'latest_round' = the penalty hits the declared keeper with the latest (highest-numbered) round, making that keeper cost `rounds` earlier.",
+  "2026": {
+    "heading": "2025 League Discipline",
+    "note": "Assessed for conduct detrimental to the league during the 2025 season (rule 13). The penalty applies to the keeper with the latest round on each manager's 2026 slate.",
+    "penalties": [
+      {
+        "owner": "David Lopez",
+        "type": "keeper_round",
+        "rounds": 1,
+        "target": "latest_round",
+        "reason": "Conduct detrimental to the league (2025 season)"
+      },
+      {
+        "owner": "Dillon Perez",
+        "type": "keeper_round",
+        "rounds": 1,
+        "target": "latest_round",
+        "reason": "Conduct detrimental to the league (2025 season)"
+      }
+    ]
+  }
+}

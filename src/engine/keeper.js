@@ -16,16 +16,46 @@
 export const MIN_KEEPERS = 2
 export const MAX_KEEPERS = 4
 
-/** Assign draft rounds to the chosen players, applying the rule-9 bump. */
-export function assignRounds(chosen) {
-  const sorted = [...chosen].sort((a, b) => a.cost - b.cost)
+/**
+ * Assign draft rounds to the chosen players.
+ *
+ * Order of operations:
+ *   1. Commissioner discipline (rules 10/13) — a keeper-round penalty hits the
+ *      keeper with the LATEST round, making it cost that many rounds earlier.
+ *   2. Rule 9 same-round bump cascade.
+ *
+ * `penalty` is the team's discipline record, e.g.
+ * { type: 'keeper_round', rounds: 1, target: 'latest_round' }.
+ */
+export function assignRounds(chosen, penalty = null) {
+  const entries = chosen.map(p => ({ p, cost: p.cost, penalized: false }))
+
+  const penaltyRounds = penalty?.type === 'keeper_round' ? (penalty.rounds || 0) : 0
+  if (penaltyRounds > 0 && entries.length) {
+    // "latest round" = highest round number (the cheapest keeper).
+    // Deterministic tie-break by name so the result never flickers.
+    let target = entries[0]
+    for (const e of entries) {
+      if (e.cost > target.cost || (e.cost === target.cost && e.p.n < target.p.n)) target = e
+    }
+    const penalized = Math.max(1, target.cost - penaltyRounds)
+    if (penalized !== target.cost) {
+      target.cost = penalized
+      target.penalized = true
+    }
+  }
+
+  const sorted = [...entries].sort((a, b) => a.cost - b.cost)
   const used = {}
-  return sorted.map(p => {
-    let round = p.cost
+  return sorted.map(e => {
+    let round = e.cost
     let bumped = false
     while (used[round] && round > 0) { round--; bumped = true }
     used[round] = true
-    return { p, round, bumped, invalid: round < 1 }
+    return {
+      p: e.p, round, bumped, penalized: e.penalized,
+      penaltyCost: e.cost, invalid: round < 1,
+    }
   })
 }
 
@@ -34,11 +64,25 @@ export function assignRounds(chosen) {
  * team = { cap, missing, rounds } from league.json.
  */
 export function evaluateSlate(chosen, team) {
-  const assignments = assignRounds(chosen)
+  const assignments = assignRounds(chosen, team.penalty)
   const notes = []
 
   if (chosen.length > 0 && chosen.length < MIN_KEEPERS) {
     notes.push({ kind: 'info', text: `Rule 1: you must keep at least ${MIN_KEEPERS} players.` })
+  }
+
+  const penalized = assignments.find(a => a.penalized)
+  if (penalized) {
+    const n = team.penalty.rounds
+    notes.push({
+      kind: 'warn',
+      text: `Discipline: ${penalized.p.n} costs ${n} round${n === 1 ? '' : 's'} earlier (${ordinal(penalized.p.cost)} → ${ordinal(penalized.penaltyCost)}) — your latest-round keeper carries the penalty.`,
+    })
+  } else if (team.penalty && chosen.length > 0) {
+    notes.push({
+      kind: 'warn',
+      text: 'Discipline: a keeper-round penalty applies to this team — it will hit your latest-round keeper.',
+    })
   }
 
   if (chosen.length === MAX_KEEPERS && chosen.every(p => p.pos === chosen[0].pos)) {

@@ -69,6 +69,17 @@ export default function Planner({ data }) {
         </div>
       </div>
 
+      {team.penalty && (
+        <div className="legend" style={{ borderColor: 'var(--bad)' }}>
+          <span className="legend-swatch" />
+          <span>
+            <b>Discipline in effect:</b> {team.penalty.reason}. This team's
+            latest-round keeper costs {team.penalty.rounds} round
+            {team.penalty.rounds === 1 ? '' : 's'} earlier for {data.meta.season}.
+          </span>
+        </div>
+      )}
+
       <div className="planner">
         <div>
           {GROUPS.map(([g, label]) => {
@@ -117,15 +128,19 @@ export default function Planner({ data }) {
                   <PosChip p={a.p.pos} />
                   <span className="sn">
                     <b>{a.p.n}</b>
-                    {a.bumped && !a.invalid
-                      ? <small>bumped up — same-round rule</small>
+                    {a.penalized && a.bumped && !a.invalid
+                      ? <small>discipline penalty + same-round bump</small>
+                      : a.penalized
+                        ? <small style={{ color: 'var(--bad)' }}>−{team.penalty.rounds} round · discipline</small>
+                      : a.bumped && !a.invalid
+                        ? <small>bumped up — same-round rule</small>
                       : a.p.ir ? <small>IR — no penalty</small>
                       : a.p.fa ? <small>FA — 9th-round cost</small> : null}
                   </span>
                   <span className="rd">
                     {a.invalid
                       ? <span style={{ color: 'var(--bad)' }}>✕ over</span>
-                      : a.bumped
+                      : (a.bumped || a.penalized)
                         ? <><s>{ordinal(a.p.cost)}</s> {ordinal(a.round)}</>
                         : ordinal(a.round)}
                   </span>

@@ -22,7 +22,9 @@ const PRECEDENT = [
   },
 ]
 
-export default function Rules() {
+export default function Rules({ data }) {
+  const discipline = data?.discipline
+  const penalties = discipline?.penalties || []
   return (
     <section className="view">
       <div className="section-head">
@@ -54,6 +56,28 @@ export default function Rules() {
             </div>
           ))}
         </div>
+
+        {penalties.length > 0 && (
+          <>
+            <div className="subhead">{discipline.heading}</div>
+            <div className="card discipline">
+              <p className="disc-note">{discipline.note}</p>
+              {penalties.map((p, i) => (
+                <div className="disc-row" key={i}>
+                  <span className="disc-owner">{p.owner}</span>
+                  <span className="disc-reason">{p.reason}</span>
+                  <span className="pill bad">
+                    −{p.rounds} keeper round{p.rounds === 1 ? '' : 's'}
+                  </span>
+                </div>
+              ))}
+              <p className="disc-foot">
+                Applied automatically in the Keeper Planner: the penalty lands on
+                each manager's selected keeper with the latest round.
+              </p>
+            </div>
+          </>
+        )}
       </div>
     </section>
   )

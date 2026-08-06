@@ -39,6 +39,7 @@ const J = async (path) => {
 const owners = JSON.parse(readFileSync(join(ROOT, 'seed', 'owners.json'), 'utf8'))
 const history = JSON.parse(readFileSync(join(ROOT, 'seed', 'history.json'), 'utf8'))
 const champions = JSON.parse(readFileSync(join(ROOT, 'seed', 'champions.json'), 'utf8'))
+const discipline = JSON.parse(readFileSync(join(ROOT, 'seed', 'discipline.json'), 'utf8'))
 
 // --- name normalization for matching seed <-> Sleeper -----------------------
 const normalize = (n) =>
@@ -138,6 +139,7 @@ async function main () {
   })
 
   // --- seed: last season's keeper records (service years + flags) -----------
+  const seasonDiscipline = discipline[String(league.season)] || {}
   const lastSeason = String(Number(league.season) - 1)
   const seedKeepers = {} // normalized name -> {sv, rd, f1, ir, owner}
   Object.entries(history[lastSeason] || {}).forEach(([short, list]) => {
@@ -238,7 +240,11 @@ async function main () {
     const missing = []
     for (let r = 1; r <= ROUNDS; r++) if (!cap[r]) missing.push(r)
 
-    teams[nm] = { players: list, cap, missing, rounds: ROUNDS }
+    // Active discipline for this season (rules 10 & 13)
+    const penalty = (seasonDiscipline.penalties || [])
+      .find(p => p.owner === nm) || null
+
+    teams[nm] = { players: list, cap, missing, rounds: ROUNDS, penalty }
   })
 
   // Seed keepers we could not find on any roster (dropped / renamed) — for
@@ -275,6 +281,7 @@ async function main () {
     teams,
     history: historyOut,
     champions,
+    discipline: seasonDiscipline,
     unmatchedSeed,
   }
 
