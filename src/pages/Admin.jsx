@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { firebaseEnabled, signIn, signOutUser, loadDeclarations, saveDeclaration } from '../firebase.js'
+import { commissionerEmail } from '../firebase-config.js'
 import { MAX_KEEPERS } from '../engine/keeper.js'
 
 export default function Admin({ data }) {
   const [user, setUser] = useState(null)
-  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -25,9 +25,9 @@ export default function Admin({ data }) {
     e.preventDefault()
     setBusy(true); setError('')
     try {
-      setUser(await signIn(email.trim(), password))
+      setUser(await signIn(commissionerEmail, password))
     } catch (err) {
-      setError('Sign-in failed — check email and password.')
+      setError('Sign-in failed — wrong password.')
       console.error(err)
     } finally {
       setBusy(false)
@@ -97,15 +97,12 @@ export default function Admin({ data }) {
           <form className="card" style={{ padding: 26 }} onSubmit={doSignIn}>
             <div className="lock">🔒</div>
             <p style={{ textAlign: 'center', color: 'var(--ink-2)', margin: '0 0 6px' }}>
-              Sign in to declare keepers and record overrides.
+              Enter the commissioner password to declare keepers and record overrides.
             </p>
             <label className="field">
-              <span>Commissioner email</span>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="username" required />
-            </label>
-            <label className="field">
-              <span>Password</span>
-              <input type="password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" required />
+              <span>Commissioner password</span>
+              <input type="password" value={password} onChange={e => setPassword(e.target.value)}
+                autoComplete="current-password" autoFocus required />
             </label>
             {error && <p style={{ color: 'var(--bad)', fontSize: 12.5 }}>{error}</p>}
             <button className="btn" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
@@ -118,7 +115,7 @@ export default function Admin({ data }) {
       ) : (
         <div style={{ maxWidth: 860, margin: '0 auto' }}>
           <div className="filters" style={{ justifyContent: 'space-between' }}>
-            <span className="pill good"><i className="dot" />Signed in as {user.email}</span>
+            <span className="pill good"><i className="dot" />Signed in as Commissioner</span>
             <button className="btn" style={{ width: 'auto', padding: '8px 14px' }}
               onClick={() => signOutUser().then(() => setUser(null))}>Sign out</button>
           </div>

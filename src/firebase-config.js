@@ -11,15 +11,15 @@
  *
  * The web config is not a secret — security comes from Firestore rules.
  */
-export const firebaseConfig = null
+/** Commissioner sign-in: the console shows only a password box; this email is
+ *  the account it signs into behind the scenes. */
+export const commissionerEmail = 'tvaona@yahoo.com'
 
-/* Example:
 export const firebaseConfig = {
-  apiKey: "AIza…",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "…",
-  appId: "…",
+  apiKey: 'AIzaSyCw-jNQAkfW1E39DS2lbLqPXI8ERqgMX6A',
+  authDomain: 'playin-for-keeps.firebaseapp.com',
+  projectId: 'playin-for-keeps',
+  storageBucket: 'playin-for-keeps.firebasestorage.app',
+  messagingSenderId: '408730713096',
+  appId: '1:408730713096:web:0f832a414a183648e565bd',
 }
-*/

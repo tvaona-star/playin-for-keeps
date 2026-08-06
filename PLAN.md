@@ -1,7 +1,19 @@
 # Keeper League Tracker — Plan
 
 A website to track a Keeper Fantasy Football League hosted on Sleeper.
-Status: **Planning** (no code until approved).
+Status: **BUILT** (2026-08-05) — approved and implemented. This file is now the
+historical design record; see `README.md` for current setup/deploy docs.
+
+Build summary: Vite + React site with daily Sleeper sync (GitHub Action →
+`public/data/league.json`), keeper engine in `scripts/sync.mjs` (per-player
+costs) + `src/engine/keeper.js` (slate rules), league archive seeded from
+`seed/`, Firebase-gated commissioner console (config pending). Remaining to go
+live: push to GitHub, enable Pages (Source: GitHub Actions), add Firebase
+config. New engine coverage vs mockup: rule 3 service-year limits + IR
+exceptions from seed history (e.g. Nico Collins/Trey McBride now correctly
+ineligible; Jordan Love/Drake London keepable at frozen round via rule 6).
+Open commissioner ruling: does a waiver pickup of another owner's maxed keeper
+reset the service-year clock? (Kyler Murray case — engine keeps sv attached.)
 
 League: **"Playin' for Keeps"** · 10 teams · Est. 2017
 Sleeper League ID (2026, current): **1389688843191488512** (status: pre-draft)

@@ -1,0 +1,35 @@
+rules_version = '2';
+
+// Playin' for Keeps — keeper tracker
+//
+// Anyone in the league can READ (the site is public and read-only).
+// Only the commissioner's authenticated account can WRITE. This is the real
+// security boundary: the web config and any client-side check are public, so
+// the database itself must enforce who may change data.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isCommissioner() {
+      return request.auth != null
+          && request.auth.uid == '0uAAkqTgROVYYQwdhyeCZxMFYHp1';
+    }
+
+    // Declared keepers by season: /declarations/{season}
+    match /declarations/{season} {
+      allow read: if true;
+      allow write: if isCommissioner();
+    }
+
+    // Commissioner overrides (costs, service years, IR flags, penalties)
+    match /overrides/{docId} {
+      allow read: if true;
+      allow write: if isCommissioner();
+    }
+
+    // Nothing else is writable.
+    match /{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}
