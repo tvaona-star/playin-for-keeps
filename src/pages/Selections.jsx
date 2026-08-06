@@ -77,14 +77,14 @@ export default function Selections({ data }) {
                         : undefined}>
                       {k.pos && <span className="pos" data-p={k.pos}>{k.pos}</span>}
                       <span className="kn">
-                        {k.p}
-                        {k.ir && <span className="pill info" style={{ fontSize: 9.5, padding: '1px 6px', marginLeft: 5 }}>IR</span>}
+                        <span className="pn" title={k.p}>{k.p}</span>
+                        {k.ir && <span className="pill info tiny" title="On IR — year doesn't count (rule 6)">IR</span>}
                         {maxed && (
-                          <span className="pill bad" style={{ fontSize: 9.5, padding: '1px 6px', marginLeft: 5 }}>
-                            {k.f1 ? '1st · max' : 'maxed'}
-                          </span>
+                          <span className="pill bad tiny">{k.f1 ? '1st max' : 'maxed'}</span>
                         )}
-                        {k.sv != null && <small> · {k.sv} yr{k.sv === 1 ? '' : 's'}</small>}
+                        {k.sv != null && (
+                          <small title={`${k.sv} service year${k.sv === 1 ? '' : 's'} used`}>{k.sv}y</small>
+                        )}
                       </span>
                       <span className="kr">{k.rd != null ? <><small>R</small>{k.rd}</> : '—'}</span>
                     </div>

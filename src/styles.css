@@ -186,12 +186,19 @@ select:focus-visible,.tab:focus-visible,button:focus-visible,.prow:focus-visible
 .lb-count{font-weight:800;font-variant-numeric:tabular-nums;color:var(--gold);}
 
 /* Selections */
-.sel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:14px;}
+.sel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px;}
 .team-card{padding:15px 16px;}
 .team-card h3{font-size:15px;display:flex;align-items:center;gap:9px;margin-bottom:11px;}
 .team-card .av{width:27px;height:27px;border-radius:8px;background:var(--surface-3);display:grid;place-items:center;font-weight:800;font-size:11px;color:var(--ink-2);flex:none;}
-.krow{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);}
+/* One row = one line: the name truncates, badges and round never wrap. */
+.krow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);flex-wrap:nowrap;}
 .krow:last-child{border-bottom:none;}
+.krow .pos{flex:none;}
+.krow .kr{flex:none;}
+.krow .kn{display:flex;align-items:center;gap:5px;min-width:0;}
+.krow .kn .pn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
+.krow .kn .pill,.krow .kn small{flex:none;white-space:nowrap;}
+.pill.tiny{font-size:9.5px;padding:1px 5px;}
 /* Keeper that could not be kept the following season (rule 3 / rule 5). */
 .krow.maxed{background:var(--bad-soft);box-shadow:inset 3px 0 0 var(--bad);
   border-radius:7px;padding-left:9px;padding-right:9px;margin:0 -9px;}
