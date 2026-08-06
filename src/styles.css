@@ -192,6 +192,18 @@ select:focus-visible,.tab:focus-visible,button:focus-visible,.prow:focus-visible
 .team-card .av{width:27px;height:27px;border-radius:8px;background:var(--surface-3);display:grid;place-items:center;font-weight:800;font-size:11px;color:var(--ink-2);flex:none;}
 .krow{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);}
 .krow:last-child{border-bottom:none;}
+/* Keeper that could not be kept the following season (rule 3 / rule 5). */
+.krow.maxed{background:var(--bad-soft);box-shadow:inset 3px 0 0 var(--bad);
+  border-radius:7px;padding-left:9px;padding-right:9px;margin:0 -9px;}
+.krow.maxed .kn{color:var(--bad-strong);font-weight:600;}
+.krow.maxed .kr{color:var(--bad-strong);}
+.krow.maxed .kn small{color:var(--bad-strong);opacity:.8;}
+.legend{display:flex;align-items:flex-start;gap:9px;margin:-6px 0 16px;padding:10px 13px;
+  border:1px solid var(--border);border-radius:10px;background:var(--surface-2);
+  font-size:12.5px;color:var(--ink-2);max-width:72ch;line-height:1.45;}
+.legend b{color:var(--ink);}
+.legend-swatch{width:13px;height:13px;border-radius:4px;flex:none;margin-top:2px;
+  background:var(--bad-soft);box-shadow:inset 3px 0 0 var(--bad);border:1px solid var(--bad);}
 .krow .kn{flex:1;font-size:13.5px;font-weight:500;}
 .krow .kn small{color:var(--ink-3);font-weight:400;}
 .krow .kr{font-weight:800;font-variant-numeric:tabular-nums;font-size:15px;}
