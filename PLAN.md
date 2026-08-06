@@ -12,8 +12,11 @@ live: push to GitHub, enable Pages (Source: GitHub Actions), add Firebase
 config. New engine coverage vs mockup: rule 3 service-year limits + IR
 exceptions from seed history (e.g. Nico Collins/Trey McBride now correctly
 ineligible; Jordan Love/Drake London keepable at frozen round via rule 6).
-Open commissioner ruling: does a waiver pickup of another owner's maxed keeper
-reset the service-year clock? (Kyler Murray case — engine keeps sv attached.)
+RESOLVED commissioner ruling (2026-08-05): a waiver pickup does NOT reset the
+service-year clock (rule 3). Service years follow the player, not the roster;
+rule 7 sets the cost of a waiver pickup but rule 3 governs eligibility. Engine
+already behaved this way (seed keyed by player name). Documented as precedent
+in README.md and on the site's League Rules page.
 
 League: **"Playin' for Keeps"** · 10 teams · Est. 2017
 Sleeper League ID (2026, current): **1389688843191488512** (status: pre-draft)

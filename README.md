@@ -73,6 +73,12 @@ Per-player costs are computed at sync time in `scripts/sync.mjs`:
 - End-of-season IR: no round escalation and the year doesn't count (rule 6).
 - Service years (rule 3, max 2 additional) seed from `seed/history.json`.
 
+**Commissioner ruling (precedent, rule 13):** service years follow the *player*,
+not the roster. A maxed-out keeper stays ineligible even after being dropped and
+claimed off waivers by a different owner — rule 7 sets the *cost* of a waiver
+pickup (a 9th), but rule 3 governs whether he is keepable at all. The seed
+history is therefore keyed by player name, not by owner.
+
 Slate-level rules (min 2 / max 4, position mix, same-round bump cascading into
 Round 1) run client-side in `src/engine/keeper.js`.
 
