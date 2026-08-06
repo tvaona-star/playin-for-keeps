@@ -1,0 +1,87 @@
+{
+  "_comment": "Keeper archive transcribed from 'Keeper tracker 2025.xlsx' (Keepers tab). sv = service years at time kept; rd = round kept at; f1 = kept-at-1st max marker (*); ir = IR no-penalty (** — round not escalated, year not counted). Names normalized from tracker typos.",
+  "2019": {
+    "Kyle": [{"p": "Ezekiel Elliott", "sv": 2, "rd": 1}, {"p": "Robert Woods", "sv": 1, "rd": 9}],
+    "Tyler": [{"p": "Saquon Barkley", "sv": 1, "rd": 1, "f1": true}, {"p": "Davante Adams", "sv": 2, "rd": 5}, {"p": "Damien Williams", "sv": 1, "rd": 9}],
+    "David": [{"p": "Baker Mayfield", "sv": 1, "rd": 9}, {"p": "Deshaun Watson", "sv": 1, "rd": 14}],
+    "Spencer": [{"p": "Christian McCaffrey", "sv": 2, "rd": 2}, {"p": "Patrick Mahomes", "sv": 1, "rd": 6}, {"p": "James Conner", "sv": 0, "rd": 10, "ir": true}],
+    "Matt": [{"p": "Nick Chubb", "sv": 1, "rd": 9}, {"p": "DJ Moore", "sv": 1, "rd": 11}],
+    "Marcus": [{"p": "Travis Kelce", "sv": 1, "rd": 4}, {"p": "Cooper Kupp", "sv": 0, "rd": 7, "ir": true}, {"p": "Marlon Mack", "sv": null, "rd": null}],
+    "Erwin": [{"p": "DeAndre Hopkins", "sv": 2, "rd": 2}],
+    "Blake": [{"p": "Carson Wentz", "sv": 1, "rd": 7}, {"p": "Derrick Henry", "sv": 1, "rd": 8}, {"p": "George Kittle", "sv": 1, "rd": 9}],
+    "Bob": [{"p": "JuJu Smith-Schuster", "sv": 2, "rd": 8}, {"p": "Alvin Kamara", "sv": 2, "rd": 10}, {"p": "Aaron Jones", "sv": 0, "rd": 11, "ir": true}],
+    "Dillon": [{"p": "Tyreek Hill", "sv": 2, "rd": 5}, {"p": "Tarik Cohen", "sv": 1, "rd": 8}, {"p": "Phillip Lindsay", "sv": 1, "rd": 9}]
+  },
+  "2020": {
+    "Kyle": [{"p": "Devin Singletary", "sv": 1, "rd": 11}, {"p": "Robert Woods", "sv": 2, "rd": 8}],
+    "Tyler": [{"p": "Josh Allen", "sv": 1, "rd": 9}, {"p": "Melvin Gordon", "sv": 1, "rd": 5}, {"p": "Miles Sanders", "sv": 1, "rd": 2}],
+    "David": [{"p": "Deshaun Watson", "sv": 2, "rd": 13}, {"p": "DJ Chark", "sv": 1, "rd": 9}, {"p": "Courtland Sutton", "sv": 1, "rd": 11}],
+    "Spencer": [{"p": "Patrick Mahomes", "sv": 2, "rd": 5}, {"p": "Kyler Murray", "sv": 1, "rd": 7}, {"p": "James Conner", "sv": 1, "rd": 9}],
+    "Matt": [{"p": "Nick Chubb", "sv": 2, "rd": 8}, {"p": "DJ Moore", "sv": 2, "rd": 10}, {"p": "JuJu Smith-Schuster", "sv": 1, "rd": 9}],
+    "Marcus": [{"p": "Travis Kelce", "sv": 2, "rd": 3}, {"p": "Lamar Jackson", "sv": 1, "rd": 8}, {"p": "Cooper Kupp", "sv": 1, "rd": 6}],
+    "Erwin": [{"p": "Austin Ekeler", "sv": 1, "rd": 4}],
+    "Blake": [{"p": "AJ Brown", "sv": 1, "rd": 9}, {"p": "Derrick Henry", "sv": 2, "rd": 7}, {"p": "George Kittle", "sv": 2, "rd": 8}],
+    "Bob": [{"p": "Aaron Jones", "sv": 1, "rd": 10}, {"p": "DeVante Parker", "sv": 1, "rd": 9}, {"p": "Darren Waller", "sv": 1, "rd": 8}],
+    "Dillon": [{"p": "Dak Prescott", "sv": 1, "rd": 10}, {"p": "Mark Andrews", "sv": 1, "rd": 8}, {"p": "Kenyan Drake", "sv": 1, "rd": 9}]
+  },
+  "2021": {
+    "Kyle": [{"p": "Christian McCaffrey", "pos": "RB", "sv": 1, "rd": 1, "f1": true}, {"p": "DK Metcalf", "pos": "WR", "sv": 1, "rd": 3}, {"p": "Aaron Rodgers", "pos": "QB", "sv": 1, "rd": 4}],
+    "Tyler": [{"p": "Ezekiel Elliott", "pos": "RB", "sv": 1, "rd": 1, "f1": true}, {"p": "Stefon Diggs", "pos": "WR", "sv": 1, "rd": 5}, {"p": "Lamar Jackson", "pos": "QB", "sv": 2, "rd": 7}],
+    "David": [{"p": "Justin Herbert", "pos": "QB", "sv": 1, "rd": 7}, {"p": "Justin Jefferson", "pos": "WR", "sv": 1, "rd": 9}],
+    "Spencer": [{"p": "J.K. Dobbins", "pos": "RB", "sv": 1, "rd": 5}, {"p": "Kyler Murray", "pos": "QB", "sv": 2, "rd": 6}, {"p": "DJ Moore", "pos": "WR", "sv": 2, "rd": 10}],
+    "Matt": [{"p": "Courtland Sutton", "pos": "WR", "sv": 0, "rd": 10}, {"p": "Mike Davis", "pos": "RB", "sv": 1, "rd": 8}],
+    "Marcus": [{"p": "Josh Allen", "pos": "QB", "sv": 2, "rd": 8}, {"p": "Jonathan Taylor", "pos": "RB", "sv": 1, "rd": 2}, {"p": "D'Andre Swift", "pos": "RB", "sv": 1, "rd": 9}],
+    "Erwin": [{"p": "Dalvin Cook", "pos": "RB", "sv": 1, "rd": 1, "f1": true}, {"p": "Austin Ekeler", "pos": "RB", "sv": 2, "rd": 3}],
+    "Blake": [{"p": "Terry McLaurin", "pos": "WR", "sv": 1, "rd": 4}, {"p": "AJ Brown", "pos": "WR", "sv": 2, "rd": 7}, {"p": "Dallas Goedert", "pos": "TE", "sv": 1, "rd": 9}],
+    "Bob": [{"p": "Aaron Jones", "pos": "RB", "sv": 2, "rd": 8}, {"p": "CeeDee Lamb", "pos": "WR", "sv": 1, "rd": 9}, {"p": "Dak Prescott", "pos": "QB", "sv": 0, "rd": 10}],
+    "Dillon": [{"p": "Alvin Kamara", "pos": "RB", "sv": 1, "rd": 1, "f1": true}, {"p": "Calvin Ridley", "pos": "WR", "sv": 1, "rd": 3}, {"p": "Antonio Gibson", "pos": "RB", "sv": 1, "rd": 4}]
+  },
+  "2022": {
+    "Kyle": [{"p": "James Conner", "sv": 1, "rd": 10}, {"p": "Jaylen Waddle", "sv": 1, "rd": 8}],
+    "Tyler": [{"p": "Stefon Diggs", "sv": 2, "rd": 4}, {"p": "Lamar Jackson", "sv": 2, "rd": 5, "ir": true}, {"p": "Trey Lance", "sv": 1, "rd": 7}],
+    "David": [{"p": "Justin Herbert", "sv": 2, "rd": 6}, {"p": "Justin Jefferson", "sv": 2, "rd": 8}, {"p": "Cam Akers", "sv": 0, "rd": 13, "ir": true}],
+    "Spencer": [{"p": "Elijah Mitchell", "sv": 1, "rd": 7}, {"p": "Mike Williams", "sv": 1, "rd": 8}, {"p": "Travis Etienne", "sv": 0, "rd": 9, "ir": true}],
+    "Matt": [{"p": "Najee Harris", "sv": 1, "rd": 1, "f1": true}, {"p": "Cooper Kupp", "sv": 1, "rd": 3}, {"p": "Deebo Samuel", "sv": 1, "rd": 5}],
+    "Marcus": [{"p": "Jonathan Taylor", "sv": 2, "rd": 1}, {"p": "D'Andre Swift", "sv": 2, "rd": 8}, {"p": "Diontae Johnson", "sv": 1, "rd": 5}],
+    "Erwin": [{"p": "Melvin Gordon", "sv": 1, "rd": 9}],
+    "Blake": [{"p": "Ja'Marr Chase", "sv": 1, "rd": 6}, {"p": "Matthew Stafford", "sv": 1, "rd": 4}, {"p": "Marquise Brown", "sv": 1, "rd": 8}],
+    "Bob": [{"p": "Christian McCaffrey", "sv": 1, "rd": 1, "f1": true, "ir": true}, {"p": "CeeDee Lamb", "sv": 2, "rd": 8}, {"p": "Dak Prescott", "sv": 1, "rd": 9}],
+    "Dillon": [{"p": "Javonte Williams", "sv": 1, "rd": 9}, {"p": "Courtland Sutton", "sv": 1, "rd": 6}, {"p": "Allen Robinson", "sv": 1, "rd": 6}]
+  },
+  "2023": {
+    "Kyle": [{"p": "Jalen Hurts", "sv": 1, "rd": 1}, {"p": "AJ Brown", "sv": 1, "rd": 2}, {"p": "Jaylen Waddle", "sv": 2, "rd": 7}],
+    "Tyler": [{"p": "Lamar Jackson", "sv": 2, "rd": 5, "ir": true}, {"p": "Tua Tagovailoa", "sv": 1, "rd": 7}, {"p": "Christian Watson", "sv": 1, "rd": 11}],
+    "David": [{"p": "Darren Waller", "sv": 1, "rd": 8}, {"p": "James Cook", "sv": 1, "rd": 9}, {"p": "Cam Akers", "sv": 1, "rd": 12}],
+    "Spencer": [{"p": "Trevor Lawrence", "sv": 1, "rd": 4}, {"p": "Garrett Wilson", "sv": 1, "rd": 13}, {"p": "Deshaun Watson", "sv": 1, "rd": 14}],
+    "Matt": [{"p": "Cooper Kupp", "sv": 1, "rd": 3, "ir": true}, {"p": "Khalil Herbert", "sv": 1, "rd": 8}, {"p": "George Pickens", "sv": 1, "rd": 13}],
+    "Marcus": [{"p": "Calvin Ridley", "sv": 1, "rd": 9}, {"p": "Chris Olave", "sv": 1, "rd": 8}, {"p": "Alexander Mattison", "sv": 1, "rd": 10}],
+    "Erwin": [{"p": "Tony Pollard", "sv": 1, "rd": 6}, {"p": "Josh Jacobs", "sv": 1, "rd": 6}, {"p": "Daniel Jones", "sv": 1, "rd": 10}],
+    "Blake": [{"p": "Ja'Marr Chase", "sv": 2, "rd": 5}, {"p": "Jahan Dotson", "sv": 1, "rd": 8}, {"p": "Justin Fields", "sv": 1, "rd": 9}],
+    "Bob": [{"p": "Dameon Pierce", "sv": 0, "rd": 7, "ir": true}, {"p": "Dak Prescott", "sv": 2, "rd": 8}, {"p": "Rhamondre Stevenson", "sv": 1, "rd": 9}],
+    "Dillon": [{"p": "Patrick Mahomes", "sv": 1, "rd": 1}, {"p": "Tyler Lockett", "sv": 1, "rd": 8}, {"p": "Elijah Moore", "sv": 1, "rd": 9}]
+  },
+  "2024": {
+    "Kyle": [{"p": "Kenneth Walker", "pos": "RB", "sv": 1, "rd": 5}, {"p": "Alvin Kamara", "pos": "RB", "sv": 1, "rd": 7}, {"p": "Mike Evans", "pos": "WR", "sv": 1, "rd": 8}, {"p": "Isiah Pacheco", "pos": "RB", "sv": 1, "rd": 9}],
+    "Tyler": [{"p": "Jordan Love", "pos": "QB", "sv": 1, "rd": 8}, {"p": "Sam LaPorta", "pos": "TE", "sv": 1, "rd": 9}, {"p": "Nico Collins", "pos": "WR", "sv": 1, "rd": 9}, {"p": "Christian Watson", "pos": "WR", "sv": 1, "rd": 11, "ir": true}],
+    "David": [{"p": "Christian McCaffrey", "pos": "RB", "sv": 1, "rd": 1, "f1": true}, {"p": "James Cook", "pos": "RB", "sv": 2, "rd": 8}],
+    "Spencer": [{"p": "Trevor Lawrence", "pos": "QB", "sv": 2, "rd": 3}, {"p": "Rashee Rice", "pos": "WR", "sv": 1, "rd": 7}, {"p": "Trey McBride", "pos": "TE", "sv": 1, "rd": 7}, {"p": "Garrett Wilson", "pos": "WR", "sv": 2, "rd": 12}],
+    "Matt": [{"p": "Tyreek Hill", "pos": "WR", "sv": 1, "rd": 1, "f1": true}, {"p": "Matthew Stafford", "pos": "QB", "sv": 1, "rd": 10}, {"p": "George Pickens", "pos": "WR", "sv": 2, "rd": 12}, {"p": "Raheem Mostert", "pos": "RB", "sv": 1, "rd": 14}],
+    "Marcus": [{"p": "Josh Allen", "pos": "QB", "sv": 1, "rd": 1, "f1": true}, {"p": "Jonathan Taylor", "pos": "RB", "sv": 1, "rd": 2}, {"p": "Breece Hall", "pos": "RB", "sv": 1, "rd": 3}, {"p": "Chris Olave", "pos": "WR", "sv": 2, "rd": 7}],
+    "Erwin": [{"p": "Josh Jacobs", "pos": "RB", "sv": 2, "rd": 4}, {"p": "David Montgomery", "pos": "RB", "sv": 1, "rd": 9}],
+    "Blake": [{"p": "Jahmyr Gibbs", "pos": "RB", "sv": 1, "rd": 2}, {"p": "Puka Nacua", "pos": "WR", "sv": 1, "rd": 9}, {"p": "Dalton Kincaid", "pos": "TE", "sv": 1, "rd": 13}, {"p": "De'Von Achane", "pos": "RB", "sv": 1, "rd": 14}],
+    "Bob": [{"p": "Bijan Robinson", "pos": "RB", "sv": 1, "rd": 1, "f1": true}, {"p": "Anthony Richardson", "pos": "QB", "sv": 0, "rd": 2, "ir": true}, {"p": "Evan Engram", "pos": "TE", "sv": 1, "rd": 9}, {"p": "Jameson Williams", "pos": "WR", "sv": 1, "rd": 14}],
+    "Dillon": [{"p": "Drake London", "pos": "WR", "sv": 1, "rd": 6}, {"p": "Kyren Williams", "pos": "RB", "sv": 1, "rd": 8}, {"p": "Kyler Murray", "pos": "QB", "sv": 1, "rd": 9}, {"p": "C.J. Stroud", "pos": "QB", "sv": 1, "rd": 10}]
+  },
+  "2025": {
+    "Kyle": [{"p": "Justin Jefferson", "pos": "WR", "sv": 1, "rd": 1, "f1": true}, {"p": "Jared Goff", "pos": "QB", "sv": 1, "rd": 3}, {"p": "Alvin Kamara", "pos": "RB", "sv": 1, "rd": 7, "ir": true}, {"p": "Isiah Pacheco", "pos": "RB", "sv": 2, "rd": 8}],
+    "Tyler": [{"p": "Jayden Daniels", "pos": "QB", "sv": 1, "rd": 2}, {"p": "Jordan Love", "pos": "QB", "sv": 2, "rd": 7}, {"p": "Nico Collins", "pos": "WR", "sv": 2, "rd": 8}, {"p": "Chuba Hubbard", "pos": "RB", "sv": 1, "rd": 9}],
+    "David": [{"p": "Christian McCaffrey", "pos": "RB", "sv": 1, "rd": 1, "f1": true}, {"p": "Justin Fields", "pos": "QB", "sv": 1, "rd": 8}, {"p": "Xavier Worthy", "pos": "WR", "sv": 1, "rd": 9}, {"p": "J.J. McCarthy", "pos": "QB", "sv": 0, "rd": 14, "ir": true}],
+    "Spencer": [{"p": "Jalen Hurts", "pos": "QB", "sv": 1, "rd": 1, "f1": true}, {"p": "Trey McBride", "pos": "TE", "sv": 2, "rd": 6}, {"p": "Deebo Samuel", "pos": "WR", "sv": 1, "rd": 9}, {"p": "Bo Nix", "pos": "QB", "sv": 1, "rd": 10}],
+    "Matt": [{"p": "Courtland Sutton", "pos": "WR", "sv": 1, "rd": 8}, {"p": "Jaxon Smith-Njigba", "pos": "WR", "sv": 1, "rd": 9}, {"p": "J.K. Dobbins", "pos": "RB", "sv": 1, "rd": 13}],
+    "Marcus": [{"p": "DJ Moore", "pos": "WR", "sv": 1, "rd": 4}, {"p": "Rashee Rice", "pos": "WR", "sv": 1, "rd": 7, "ir": true}, {"p": "Jerry Jeudy", "pos": "WR", "sv": 1, "rd": 9}],
+    "Erwin": [{"p": "CeeDee Lamb", "pos": "WR", "sv": 0, "rd": 1, "ir": true}, {"p": "Justin Herbert", "pos": "QB", "sv": 1, "rd": 4}, {"p": "Baker Mayfield", "pos": "QB", "sv": 1, "rd": 5}, {"p": "Tyrone Tracy", "pos": "RB", "sv": 1, "rd": 9}],
+    "Blake": [{"p": "Brian Thomas", "pos": "WR", "sv": 1, "rd": 6}, {"p": "Brock Bowers", "pos": "TE", "sv": 1, "rd": 7}, {"p": "Puka Nacua", "pos": "WR", "sv": 2, "rd": 8}, {"p": "De'Von Achane", "pos": "RB", "sv": 2, "rd": 13}],
+    "Bob": [{"p": "Tee Higgins", "pos": "WR", "sv": 1, "rd": 4}, {"p": "Ladd McConkey", "pos": "WR", "sv": 1, "rd": 6}, {"p": "Bucky Irving", "pos": "RB", "sv": 1, "rd": 9}, {"p": "Jameson Williams", "pos": "WR", "sv": 2, "rd": 13}],
+    "Dillon": [{"p": "Malik Nabers", "pos": "WR", "sv": 1, "rd": 3}, {"p": "Drake London", "pos": "WR", "sv": 2, "rd": 5}, {"p": "Kyren Williams", "pos": "RB", "sv": 2, "rd": 7}, {"p": "Kyler Murray", "pos": "QB", "sv": 2, "rd": 8}]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "_comment": "Sleeper display_name -> real name, plus short key used in the keeper history seed.",
+  "sleeperToName": {
+    "TV29": "Tyler Vaona",
+    "BeSmart": "Blake Smart",
+    "bhardin": "Bob Hardin",
+    "DillyDilly33": "Dillon Perez",
+    "KINGmarcustran": "Marcus Tran",
+    "erlose": "Erwin Bensan",
+    "swatton13": "Spencer Watton",
+    "davidlohe": "David Lopez",
+    "MATAIJ": "Matt Jones",
+    "kylematthews": "Kyle Matthews"
+  },
+  "shortToName": {
+    "Kyle": "Kyle Matthews",
+    "Tyler": "Tyler Vaona",
+    "David": "David Lopez",
+    "Spencer": "Spencer Watton",
+    "Matt": "Matt Jones",
+    "Marcus": "Marcus Tran",
+    "Erwin": "Erwin Bensan",
+    "Blake": "Blake Smart",
+    "Bob": "Bob Hardin",
+    "Dillon": "Dillon Perez"
+  },
+  "teamOrder": ["Tyler Vaona", "Marcus Tran", "Spencer Watton", "Blake Smart", "Bob Hardin", "Dillon Perez", "Erwin Bensan", "David Lopez", "Matt Jones", "Kyle Matthews"]
+}
