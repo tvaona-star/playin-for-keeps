@@ -12,10 +12,11 @@ function maxedOut(k) {
   return !k.ir && (k.f1 === true || (k.sv ?? 0) >= 2)
 }
 
-export default function Selections({ data }) {
+export default function Selections({ data, published = null }) {
   const years = Object.keys(data.history).sort((a, b) => b - a)
   const planning = String(data.meta.season)
-  const [year, setYear] = useState(years[0])
+  // Land on the current season once its keepers are official.
+  const [year, setYear] = useState(published ? planning : years[0])
 
   const seasonData = year === planning ? null : data.history[year]
   const nextYear = Number(year) + 1
@@ -24,7 +25,7 @@ export default function Selections({ data }) {
     : 0
 
   // Current season: show the commissioner's declarations once published.
-  const [live, setLive] = useState(undefined) // undefined = loading, null = none
+  const [live, setLive] = useState(published ?? undefined) // undefined = loading, null = none
   useEffect(() => {
     if (year !== planning || !firebaseEnabled) { setLive(null); return }
     let cancelled = false
@@ -54,7 +55,7 @@ export default function Selections({ data }) {
         <div className="filters" style={{ margin: 0 }}>
           <select value={year} onChange={e => setYear(e.target.value)} aria-label="Select season">
             <option value={planning}>
-              {planning}{live ? ' — official keepers' : live === undefined ? '' : ' — not yet declared'}
+              {planning}{(live || published) ? ' — official keepers' : live === undefined ? '' : ' — not yet declared'}
             </option>
             {years.map(y => (
               <option key={y} value={y}>

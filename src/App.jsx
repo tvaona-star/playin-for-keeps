@@ -82,7 +82,7 @@ export default function App() {
         {data && (
           <>
             {tab === 'myteam' && <Planner data={data} />}
-            {tab === 'selections' && <Selections data={data} />}
+            {tab === 'selections' && <Selections data={data} published={publishedSeason} />}
             {tab === 'champs' && <Champions data={data} />}
             {tab === 'rules' && <Rules data={data} />}
             {tab === 'admin' && <Admin data={data} />}
