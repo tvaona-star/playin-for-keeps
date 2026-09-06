@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { initials } from '../engine/keeper.js'
+import { useEffect, useState } from 'react'
+import { initials, ordinal } from '../engine/keeper.js'
+import { firebaseEnabled, loadPublishedDeclarations } from '../firebase.js'
 
 /**
  * Can this keeper be kept AGAIN the following season?
@@ -21,6 +22,23 @@ export default function Selections({ data }) {
   const maxedCount = seasonData
     ? Object.values(seasonData).flat().filter(maxedOut).length
     : 0
+
+  // Current season: show the commissioner's declarations once published.
+  const [live, setLive] = useState(undefined) // undefined = loading, null = none
+  useEffect(() => {
+    if (year !== planning || !firebaseEnabled) { setLive(null); return }
+    let cancelled = false
+    loadPublishedDeclarations(planning)
+      .then(d => { if (!cancelled) setLive(d) })
+      .catch(() => { if (!cancelled) setLive(null) })
+    return () => { cancelled = true }
+  }, [year, planning])
+
+  const liveTeams = live?.teams
+    ? data.teamOrder
+        .map(o => [o, (live.teams[o]?.keepers) || []])
+        .filter(([, ks]) => ks.length)
+    : []
 
   return (
     <section className="view">
@@ -45,13 +63,53 @@ export default function Selections({ data }) {
         </div>
       </div>
 
-      {year === planning && (
+      {year === planning && live === undefined && (
+        <div className="card empty-state"><p>Loading {planning} declarations…</p></div>
+      )}
+
+      {year === planning && live === null && (
         <div className="card empty-state">
           <div className="big">🗓️</div>
           <h3 style={{ margin: '8px 0 4px' }}>{planning} keepers aren't declared yet</h3>
           <p>Declarations open one week before the {planning} draft.
             Head to <b>My Team</b> to plan your slate.</p>
         </div>
+      )}
+
+      {year === planning && live && (
+        <>
+          <div className="legend" style={{ borderColor: 'var(--accent)' }}>
+            <span className="legend-swatch" style={{ background: 'var(--accent-soft)', boxShadow: 'inset 3px 0 0 var(--accent)', borderColor: 'var(--accent)' }} />
+            <span>
+              <b>Official {planning} keepers</b>, posted by the commissioner
+              {live.publishedAt && ` on ${new Date(live.publishedAt).toLocaleDateString()}`}.
+              The round shown is what each keeper costs in the {planning} draft.
+            </span>
+          </div>
+          {liveTeams.length === 0 ? (
+            <div className="card empty-state"><p>No teams have declared yet.</p></div>
+          ) : (
+            <div className="sel-grid">
+              {liveTeams.map(([owner, keepers]) => (
+                <div className="card team-card" key={owner}>
+                  <h3><span className="av">{initials(owner)}</span>{owner}</h3>
+                  {keepers.map((k, i) => (
+                    <div className="krow" key={i}>
+                      {k.pos && <span className="pos" data-p={k.pos}>{k.pos}</span>}
+                      <span className="kn">
+                        <span className="pn" title={k.name}>{k.name}</span>
+                        {k.adjusted && (
+                          <span className="pill gold tiny" title={`Commissioner adjusted from ${k.autoRound != null ? ordinal(k.autoRound) : 'auto'}`}>adj</span>
+                        )}
+                      </span>
+                      <span className="kr">{k.round != null ? <><small>R</small>{k.round}</> : '—'}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {seasonData && (

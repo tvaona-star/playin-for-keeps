@@ -1,58 +1,155 @@
-import { useEffect, useState } from 'react'
-import { firebaseEnabled, signIn, signOutUser, loadDeclarations, saveDeclaration } from '../firebase.js'
+import { useEffect, useMemo, useState } from 'react'
+import {
+  firebaseEnabled, signIn, signOutUser,
+  loadDeclarations, saveTeamDeclaration, setPublishStatus,
+} from '../firebase.js'
 import { commissionerEmail } from '../firebase-config.js'
-import { MAX_KEEPERS } from '../engine/keeper.js'
+import { MIN_KEEPERS, MAX_KEEPERS, evaluateSlate, ordinal } from '../engine/keeper.js'
+
+/** Read a team's saved keepers, tolerating the older array-of-names format. */
+function readSaved(entry) {
+  if (!entry) return []
+  if (Array.isArray(entry)) return entry.map(name => ({ name, adjusted: false }))
+  return entry.keepers || []
+}
 
 export default function Admin({ data }) {
   const [user, setUser] = useState(null)
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
-  const [decls, setDecls] = useState({})
   const [status, setStatus] = useState('')
+
+  // owner -> [playerName]           selections
+  const [sel, setSel] = useState({})
+  // owner -> { playerName: round }  manual round adjustments
+  const [ovr, setOvr] = useState({})
+  const [pubStatus, setPubStatus] = useState('draft')
+  const [publishedAt, setPublishedAt] = useState(null)
+  const [dirty, setDirty] = useState({})
 
   const season = data.meta.season
 
   useEffect(() => {
-    if (user) {
-      loadDeclarations(season)
-        .then(d => setDecls(d.teams || {}))
-        .catch(e => setError(String(e.message || e)))
-    }
+    if (!user) return
+    loadDeclarations(season).then(d => {
+      const s = {}, o = {}
+      Object.entries(d.teams || {}).forEach(([owner, entry]) => {
+        const keepers = readSaved(entry)
+        s[owner] = keepers.map(k => k.name)
+        keepers.forEach(k => {
+          if (k.adjusted && k.round != null) (o[owner] = o[owner] || {})[k.name] = k.round
+        })
+      })
+      setSel(s); setOvr(o)
+      setPubStatus(d.status || 'draft')
+      setPublishedAt(d.publishedAt || null)
+    }).catch(e => setError(String(e.message || e)))
   }, [user, season])
 
-  const doSignIn = async (e) => {
-    e.preventDefault()
-    setBusy(true); setError('')
-    try {
-      setUser(await signIn(commissionerEmail, password))
-    } catch (err) {
-      setError('Sign-in failed — wrong password.')
-      console.error(err)
-    } finally {
-      setBusy(false)
-    }
-  }
+  /** Auto rounds from the engine (penalties + same-round bumps), per team. */
+  const computed = useMemo(() => {
+    const out = {}
+    data.teamOrder.forEach(owner => {
+      const team = data.teams[owner]
+      const names = sel[owner] || []
+      const chosen = team.players.filter(p => names.includes(p.n))
+      const result = evaluateSlate(chosen, team)
+      const auto = {}
+      result.assignments.forEach(a => { auto[a.p.n] = a.round })
+      // final rounds = auto, unless the commissioner adjusted one
+      const final = {}
+      names.forEach(n => {
+        const manual = ovr[owner]?.[n]
+        final[n] = manual != null ? manual : auto[n]
+      })
+      // conflicts introduced by manual edits
+      const counts = {}
+      Object.values(final).forEach(r => { counts[r] = (counts[r] || 0) + 1 })
+      const dupes = Object.keys(counts).filter(r => counts[r] > 1).map(Number)
+      const noCapital = Object.entries(final)
+        .filter(([, r]) => r != null && !(team.cap && team.cap[r]))
+        .map(([n, r]) => ({ name: n, round: r }))
+      out[owner] = { team, auto, final, result, dupes, noCapital, names }
+    })
+    return out
+  }, [data, sel, ovr])
 
-  const toggleKeeper = (owner, playerName) => {
-    setDecls(prev => {
+  const toggle = (owner, name) => {
+    setSel(prev => {
       const cur = prev[owner] || []
-      const next = cur.includes(playerName)
-        ? cur.filter(n => n !== playerName)
-        : cur.length < MAX_KEEPERS ? [...cur, playerName] : cur
+      const next = cur.includes(name)
+        ? cur.filter(n => n !== name)
+        : cur.length < MAX_KEEPERS ? [...cur, name] : cur
       return { ...prev, [owner]: next }
     })
+    setOvr(prev => {
+      const t = { ...(prev[owner] || {}) }; delete t[name]
+      return { ...prev, [owner]: t }
+    })
+    setDirty(d => ({ ...d, [owner]: true }))
   }
 
-  const save = async (owner) => {
+  const adjust = (owner, name, value) => {
+    setOvr(prev => {
+      const t = { ...(prev[owner] || {}) }
+      if (value === '' || value == null) delete t[name]
+      else t[name] = Math.max(1, Math.min(data.meta.rounds, Number(value)))
+      return { ...prev, [owner]: t }
+    })
+    setDirty(d => ({ ...d, [owner]: true }))
+  }
+
+  const resetTeam = (owner) => {
+    setOvr(prev => ({ ...prev, [owner]: {} }))
+    setDirty(d => ({ ...d, [owner]: true }))
+  }
+
+  const saveTeam = async (owner) => {
+    const c = computed[owner]
+    const keepers = c.names.map(n => {
+      const p = c.team.players.find(x => x.n === n)
+      const manual = ovr[owner]?.[n]
+      return {
+        name: n, pos: p?.pos || null,
+        autoRound: c.auto[n] ?? null,
+        round: c.final[n] ?? null,
+        adjusted: manual != null,
+      }
+    })
     setStatus(`Saving ${owner}…`)
     try {
-      await saveDeclaration(season, owner, decls[owner] || [])
+      await saveTeamDeclaration(season, owner, keepers)
+      setDirty(d => ({ ...d, [owner]: false }))
       setStatus(`${owner} saved ✓`)
-    } catch (e) {
-      setStatus(`Save failed: ${e.message}`)
-    }
+    } catch (e) { setStatus(`Save failed: ${e.message}`) }
     setTimeout(() => setStatus(''), 2500)
+  }
+
+  const publish = async (next) => {
+    const unsaved = Object.entries(dirty).filter(([, v]) => v).map(([k]) => k)
+    if (next === 'published' && unsaved.length) {
+      setStatus(`Save these teams first: ${unsaved.join(', ')}`)
+      setTimeout(() => setStatus(''), 4000); return
+    }
+    setBusy(true)
+    try {
+      await setPublishStatus(season, next)
+      setPubStatus(next)
+      setPublishedAt(next === 'published' ? new Date().toISOString() : null)
+      setStatus(next === 'published'
+        ? `Published — the league can now see the ${season} keepers.`
+        : 'Unpublished — hidden from the league again.')
+    } catch (e) { setStatus(`Failed: ${e.message}`) }
+    setBusy(false)
+    setTimeout(() => setStatus(''), 4000)
+  }
+
+  const doSignIn = async (e) => {
+    e.preventDefault(); setBusy(true); setError('')
+    try { setUser(await signIn(commissionerEmail, password)) }
+    catch (err) { setError('Sign-in failed — wrong password.'); console.error(err) }
+    finally { setBusy(false) }
   }
 
   if (!firebaseEnabled) {
@@ -66,19 +163,7 @@ export default function Admin({ data }) {
             <div className="lock">🔒</div>
             <h3 style={{ textAlign: 'center', marginBottom: 8 }}>Firebase not connected yet</h3>
             <p style={{ color: 'var(--ink-2)', fontSize: 13.5 }}>
-              The console needs a Firebase project to store keeper declarations and
-              overrides securely. One-time setup:
-            </p>
-            <ol style={{ color: 'var(--ink-2)', fontSize: 13.5, paddingLeft: 20, lineHeight: 1.8 }}>
-              <li>Create (or reuse) a Firebase project with Firestore</li>
-              <li>Enable Email/Password sign-in and add the commissioner account</li>
-              <li>Paste the web config into <code>src/firebase-config.js</code></li>
-              <li>Apply the security rules from <code>README.md</code></li>
-            </ol>
-            <p style={{ color: 'var(--ink-3)', fontSize: 12 }}>
-              Everything else on the site is read-only and works without it.
-              Security note: a client-side password alone can't protect data on a
-              static site — Firestore rules bound to the commissioner's account can.
+              The console needs a Firebase project to store keeper declarations securely.
             </p>
           </div>
         </div>
@@ -86,18 +171,17 @@ export default function Admin({ data }) {
     )
   }
 
-  return (
-    <section className="view">
-      <div className="section-head" style={{ justifyContent: 'center', textAlign: 'center' }}>
-        <div><div className="eyebrow">Restricted</div><h2>Commissioner Console</h2></div>
-      </div>
-
-      {!user ? (
+  if (!user) {
+    return (
+      <section className="view">
+        <div className="section-head" style={{ justifyContent: 'center', textAlign: 'center' }}>
+          <div><div className="eyebrow">Restricted</div><h2>Commissioner Console</h2></div>
+        </div>
         <div className="admin-wrap">
           <form className="card" style={{ padding: 26 }} onSubmit={doSignIn}>
             <div className="lock">🔒</div>
             <p style={{ textAlign: 'center', color: 'var(--ink-2)', margin: '0 0 6px' }}>
-              Enter the commissioner password to declare keepers and record overrides.
+              Enter the commissioner password to declare keepers and adjust rounds.
             </p>
             <label className="field">
               <span>Commissioner password</span>
@@ -112,52 +196,141 @@ export default function Admin({ data }) {
             </p>
           </form>
         </div>
-      ) : (
-        <div style={{ maxWidth: 860, margin: '0 auto' }}>
-          <div className="filters" style={{ justifyContent: 'space-between' }}>
-            <span className="pill good"><i className="dot" />Signed in as Commissioner</span>
-            <button className="btn" style={{ width: 'auto', padding: '8px 14px' }}
-              onClick={() => signOutUser().then(() => setUser(null))}>Sign out</button>
+      </section>
+    )
+  }
+
+  const published = pubStatus === 'published'
+  const totalDeclared = Object.values(sel).filter(v => v?.length).length
+  const anyDirty = Object.values(dirty).some(Boolean)
+
+  return (
+    <section className="view">
+      <div className="section-head" style={{ justifyContent: 'center', textAlign: 'center' }}>
+        <div><div className="eyebrow">Restricted</div><h2>Commissioner Console</h2></div>
+      </div>
+
+      <div className="admin-body">
+        <div className="filters" style={{ justifyContent: 'space-between' }}>
+          <span className="pill good"><i className="dot" />Signed in as Commissioner</span>
+          <button className="btn ghost" onClick={() => signOutUser().then(() => setUser(null))}>Sign out</button>
+        </div>
+
+        {/* Publish control */}
+        <div className={`card publish-bar${published ? ' is-live' : ''}`}>
+          <div className="pub-meta">
+            <span className={`pill ${published ? 'good' : 'gold'}`}>
+              <i className="dot" />{published ? 'Published — live to the league' : 'Draft — only you can see this'}
+            </span>
+            <p>
+              {totalDeclared} of {data.teamOrder.length} teams have keepers declared for {season}.
+              {published && publishedAt && ` Published ${new Date(publishedAt).toLocaleString()}.`}
+              {anyDirty && ' You have unsaved team changes.'}
+            </p>
           </div>
-          <div className="subhead">Declare {season} keepers (up to {MAX_KEEPERS} per team)</div>
-          {status && <p style={{ color: 'var(--accent)', fontSize: 13 }}>{status}</p>}
-          <div className="sel-grid">
-            {data.teamOrder.map(owner => {
-              const team = data.teams[owner]
-              const eligible = team.players.filter(p => p.elig === 'ok')
-              const chosen = decls[owner] || []
-              return (
-                <div className="card team-card" key={owner}>
-                  <h3>{owner} <span className="count" style={{ fontSize: 12, color: 'var(--ink-3)' }}>{chosen.length}/{MAX_KEEPERS}</span></h3>
+          <button className="btn" disabled={busy} onClick={() => publish(published ? 'draft' : 'published')}>
+            {published ? 'Unpublish' : `Publish ${season} keepers`}
+          </button>
+        </div>
+
+        {status && <p className="admin-status">{status}</p>}
+
+        <div className="subhead">
+          Declare {season} keepers — {MIN_KEEPERS}–{MAX_KEEPERS} per team, rounds adjustable
+        </div>
+
+        <div className="admin-grid">
+          {data.teamOrder.map(owner => {
+            const c = computed[owner]
+            const chosen = c.names
+            const eligible = c.team.players.filter(p => p.elig === 'ok')
+            const problems = [
+              ...(chosen.length > 0 && chosen.length < MIN_KEEPERS ? [`Needs at least ${MIN_KEEPERS}`] : []),
+              ...c.dupes.map(r => `Two keepers both at ${ordinal(r)}`),
+              ...c.noCapital.map(x => `No ${ordinal(x.round)} pick for ${x.name}`),
+              ...c.result.notes.filter(n => n.kind === 'warn' && !n.text.startsWith('Discipline')).map(n => n.text),
+            ]
+            return (
+              <div className="card admin-team" key={owner}>
+                <div className="at-head">
+                  <b>{owner}</b>
+                  <span className={`count${chosen.length > MAX_KEEPERS ? ' over' : ''}`}>
+                    {chosen.length}/{MAX_KEEPERS}
+                  </span>
+                  {c.team.penalty && <span className="pill bad">−{c.team.penalty.rounds} rd</span>}
+                  {dirty[owner] && <span className="pill gold">unsaved</span>}
+                </div>
+
+                {/* selected keepers with adjustable rounds */}
+                {chosen.length > 0 && (
+                  <div className="at-selected">
+                    {chosen.map(n => {
+                      const manual = ovr[owner]?.[n]
+                      const auto = c.auto[n]
+                      const isAdj = manual != null && manual !== auto
+                      return (
+                        <div className="at-row" key={n}>
+                          <span className="at-name">{n}</span>
+                          <span className="at-auto" title="Round calculated by the rules engine">
+                            auto {auto != null ? ordinal(auto) : '—'}
+                          </span>
+                          <input className={`at-round${isAdj ? ' adjusted' : ''}`} type="number"
+                            min={1} max={data.meta.rounds}
+                            value={c.final[n] ?? ''}
+                            onChange={e => adjust(owner, n, e.target.value)}
+                            aria-label={`Round for ${n}`} />
+                        </div>
+                      )
+                    })}
+                    {Object.keys(ovr[owner] || {}).length > 0 && (
+                      <button className="linkish" onClick={() => resetTeam(owner)}>Reset to auto</button>
+                    )}
+                  </div>
+                )}
+
+                {problems.length > 0 && (
+                  <div className="at-problems">
+                    {problems.map((p, i) => <div key={i}>⚠ {p}</div>)}
+                  </div>
+                )}
+
+                {/* eligible pool */}
+                <details className="at-pool" open={chosen.length === 0}>
+                  <summary>Eligible players ({eligible.length})</summary>
                   {eligible.map(p => (
-                    <label className="krow" key={p.n} style={{ cursor: 'pointer' }}>
+                    <label className="at-opt" key={p.n}>
                       <input type="checkbox" checked={chosen.includes(p.n)}
-                        onChange={() => toggleKeeper(owner, p.n)} />
-                      <span className="kn">{p.n}<small> · {p.pos}</small></span>
-                      <span className="kr"><small>R</small>{p.cost}</span>
+                        disabled={!chosen.includes(p.n) && chosen.length >= MAX_KEEPERS}
+                        onChange={() => toggle(owner, p.n)} />
+                      <span className="pos" data-p={p.pos}>{p.pos}</span>
+                      <span className="at-optname">{p.n}</span>
+                      <span className="at-optcost">{ordinal(p.cost)}</span>
                     </label>
                   ))}
-                  <button className="btn" style={{ marginTop: 10, padding: 9, fontSize: 13 }}
-                    onClick={() => save(owner)}>Save {owner.split(' ')[0]}</button>
-                </div>
-              )
-            })}
-          </div>
-          {data.unmatchedSeed?.length > 0 && (
-            <>
-              <div className="subhead">Seed records needing review</div>
-              <div className="card" style={{ padding: '6px 16px' }}>
-                {data.unmatchedSeed.map((u, i) => (
-                  <div className="ov-row" key={i}>
-                    <div className="ovn">{u.player}<small>kept by {u.owner} last season</small></div>
-                    <span className="pill gold">{u.note}</span>
-                  </div>
-                ))}
+                </details>
+
+                <button className="btn" disabled={!dirty[owner]} onClick={() => saveTeam(owner)}>
+                  {dirty[owner] ? 'Save' : 'Saved'}
+                </button>
               </div>
-            </>
-          )}
+            )
+          })}
         </div>
-      )}
+
+        {data.unmatchedSeed?.length > 0 && (
+          <>
+            <div className="subhead">Seed records needing review</div>
+            <div className="card" style={{ padding: '6px 16px' }}>
+              {data.unmatchedSeed.map((u, i) => (
+                <div className="ov-row" key={i}>
+                  <div className="ovn">{u.player}<small>kept by {u.owner} last season</small></div>
+                  <span className="pill gold">{u.note}</span>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
     </section>
   )
 }

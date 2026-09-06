@@ -91,7 +91,23 @@ Edge cases the engine flags for commissioner review appear in the console
 - `champions.json` — title history 2017-present.
 - `owners.json` — Sleeper display names ↔ real names.
 - `discipline.json` — commissioner discipline under rule 10 (loss of a keeper
-  round; rule 13 covers discretion), keyed by the season the penalty applies to. A `keeper_round` penalty with
+  round; rule 13 covers discretion), keyed by the season the penalty applies to.
+
+## Commissioner workflow
+
+The Commissioner tab (password sign-in) runs the whole declaration cycle:
+
+1. **Declare** — pick each team's keepers from its eligible players (2–4 each).
+2. **Adjust** — every keeper shows the engine's `auto` round and an editable
+   round box. Overrides are highlighted and can be reset per team. The console
+   flags duplicate rounds, missing draft capital, and slates under the minimum.
+3. **Save** — writes that team to Firestore (`declarations/{season}`).
+4. **Publish** — flips the season to `published`. Only then do the keepers
+   appear to the league on the Keeper Selections page under the current season.
+   Unpublish hides them again; publishing is blocked while any team is unsaved.
+
+Adjusted rounds are marked `adj` on the public page, with the original
+auto-computed round in the tooltip, so nothing is silently changed. A `keeper_round` penalty with
   `target: "latest_round"` makes that manager's latest-round keeper cost N
   rounds earlier; it is shown on the League Rules page and enforced live in the
   Keeper Planner.
