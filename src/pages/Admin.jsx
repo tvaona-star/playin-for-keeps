@@ -4,7 +4,7 @@ import {
   loadDeclarations, saveTeamDeclaration, setPublishStatus,
 } from '../firebase.js'
 import { commissionerEmail } from '../firebase-config.js'
-import { MIN_KEEPERS, MAX_KEEPERS, evaluateSlate, ordinal } from '../engine/keeper.js'
+import { MIN_KEEPERS, MAX_KEEPERS, evaluateSlate, ordinal, keeperYearsLeft } from '../engine/keeper.js'
 
 /** Read a team's saved keepers, tolerating the older array-of-names format. */
 function readSaved(entry) {
@@ -76,17 +76,17 @@ export default function Admin({ data }) {
         .map(([n, r]) => ({ name: n, round: r }))
       // Rule 3 (service years) + rule 5 (kept at a 1st) decide whether a
       // keeper can be kept AGAIN next season. Rule 6 exempts IR players.
-      const lastAuto = {}, lastFinal = {}
+      const lastAuto = {}, lastFinal = {}, yearsLeft = {}
       names.forEach(n => {
         const p = team.players.find(x => x.n === n)
-        const r = final[n]
-        const auto0 = !!p && !p.ir &&
-          (((p.sv ?? 0) + 1 >= maxSv) || r === 1)
+        const left = keeperYearsLeft(p, final[n], maxSv)
+        const auto0 = left === 0
         lastAuto[n] = auto0
         const manual = lastOvr[owner]?.[n]
         lastFinal[n] = manual != null ? manual : auto0
+        yearsLeft[n] = lastFinal[n] ? 0 : left
       })
-      out[owner] = { team, auto, final, result, dupes, noCapital, names, lastAuto, lastFinal }
+      out[owner] = { team, auto, final, result, dupes, noCapital, names, lastAuto, lastFinal, yearsLeft }
     })
     return out
   }, [data, sel, ovr, lastOvr, maxSv])
@@ -149,6 +149,7 @@ export default function Admin({ data }) {
         adjusted: manual != null,
         ir: !!p?.ir,
         lastYear: !!c.lastFinal[n],
+        yearsLeft: c.yearsLeft[n] ?? 0,
         lastYearAdjusted: lastOvr[owner]?.[n] != null,
       }
     })
@@ -322,7 +323,7 @@ export default function Admin({ data }) {
                               (lastAdj ? ' · manually set' : ` · auto (${lastAuto ? 'final year' : 'keepable'})`) +
                               ' — click to change'
                             }>
-                            {last ? 'final yr' : 'keepable'}
+                            {last ? 'final yr' : `${c.yearsLeft[n] ?? 1} left`}
                           </button>
                           <span className="at-auto" title="Round calculated by the rules engine">
                             auto {auto != null ? ordinal(auto) : '—'}

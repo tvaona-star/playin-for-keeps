@@ -124,6 +124,23 @@ export function initials(name) {
 }
 
 /**
+ * How many MORE times can this player be kept after the season being declared?
+ *
+ *   rule 3 — a player may be kept `maxServiceYears` times beyond the season
+ *            he was drafted/added
+ *   rule 5 — a keeper costing a 1st is done afterwards, whatever his count
+ *   rule 6 — an end-of-season IR year is free: it does not consume a keep
+ *
+ * Returns 0 when the season being declared is the player's last.
+ */
+export function keeperYearsLeft(player, round, maxServiceYears = 2) {
+  if (round === 1) return 0
+  const used = player?.sv ?? 0
+  const consumed = player?.ir ? 0 : 1
+  return Math.max(0, maxServiceYears - used - consumed)
+}
+
+/**
  * Normalize a saved declaration entry into a consistent keeper list.
  *
  * Tolerates both shapes:
@@ -152,9 +169,8 @@ export function normalizeDeclaration(entry, team, maxServiceYears = 2) {
     const p = team.players.find(x => x.n === k.name)
     const round = k.round != null ? k.round : (auto[k.name] ?? null)
     const ir = k.ir != null ? k.ir : !!p?.ir
-    const lastYear = k.lastYear != null
-      ? k.lastYear
-      : (!!p && !ir && (((p.sv ?? 0) + 1 >= maxServiceYears) || round === 1))
+    const left = keeperYearsLeft({ ...p, ir }, round, maxServiceYears)
+    const lastYear = k.lastYear != null ? k.lastYear : left === 0
     return {
       name: k.name,
       pos: k.pos ?? p?.pos ?? null,
@@ -163,6 +179,8 @@ export function normalizeDeclaration(entry, team, maxServiceYears = 2) {
       adjusted: !!k.adjusted,
       ir,
       lastYear,
+      yearsLeft: lastYear ? 0 : left,
+      serviceYears: p?.sv ?? null,
     }
   })
 }
