@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLeague, useTheme } from './useLeague.js'
 import Planner from './pages/Planner.jsx'
 import Selections from './pages/Selections.jsx'
 import Champions from './pages/Champions.jsx'
 import Rules from './pages/Rules.jsx'
 import Admin from './pages/Admin.jsx'
+import { firebaseEnabled, loadPublishedDeclarations } from './firebase.js'
 
 const TABS = [
   ['myteam', 'My Team'],
@@ -19,6 +20,18 @@ export default function App() {
   const { toggle } = useTheme()
   const [tab, setTab] = useState('myteam')
 
+  // Once the commissioner publishes, the header advances from "Planning" to
+  // "keepers set" so the season status is obvious at a glance.
+  const [publishedSeason, setPublishedSeason] = useState(null)
+  useEffect(() => {
+    if (!data || !firebaseEnabled) return
+    let cancelled = false
+    loadPublishedDeclarations(data.meta.season)
+      .then(d => { if (!cancelled && d) setPublishedSeason(d) })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [data])
+
   return (
     <>
       <div className="appbar">
@@ -30,11 +43,16 @@ export default function App() {
           </div>
           <div className="appbar-spacer" />
           {data && (
-            <div className="season" title={`Planning ${data.meta.season} keepers`}>
+            <div className={`season${publishedSeason ? ' is-set' : ''}`}
+              title={publishedSeason
+                ? `${data.meta.season} keepers are published`
+                : `Planning ${data.meta.season} keepers`}>
               <i />
-              <span className="season-long">Planning&nbsp;</span>
+              <span className="season-long">{publishedSeason ? '' : 'Planning '}</span>
               <b>{data.meta.season}</b>
-              <span className="season-long">&nbsp;keepers</span>
+              <span className="season-long">
+                {publishedSeason ? ' keepers set' : ' keepers'}
+              </span>
             </div>
           )}
           <button className="theme-btn" onClick={toggle} title="Toggle light / dark" aria-label="Toggle theme">◐</button>

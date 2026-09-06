@@ -122,3 +122,47 @@ export function initials(name) {
   const p = name.trim().split(/\s+/)
   return (p[0][0] + (p[1] ? p[1][0] : '')).toUpperCase()
 }
+
+/**
+ * Normalize a saved declaration entry into a consistent keeper list.
+ *
+ * Tolerates both shapes:
+ *   - current: { keepers: [{ name, pos, autoRound, round, adjusted, ir, lastYear }] }
+ *   - legacy:  [ "Player Name", ... ]   (saved before rounds were stored)
+ *
+ * Legacy entries carry no round data, so we recompute it from the roster with
+ * the same engine the console uses — the league sees correct rounds even for
+ * declarations saved under the old format.
+ */
+export function normalizeDeclaration(entry, team, maxServiceYears = 2) {
+  if (!entry) return []
+  const stored = Array.isArray(entry)
+    ? entry.map(name => ({ name, legacy: true }))
+    : (entry.keepers || [])
+  if (!stored.length || !team) return stored
+
+  const needsRounds = stored.some(k => k.round == null)
+  let auto = {}
+  if (needsRounds) {
+    const chosen = team.players.filter(p => stored.some(k => k.name === p.n))
+    evaluateSlate(chosen, team).assignments.forEach(a => { auto[a.p.n] = a.round })
+  }
+
+  return stored.map(k => {
+    const p = team.players.find(x => x.n === k.name)
+    const round = k.round != null ? k.round : (auto[k.name] ?? null)
+    const ir = k.ir != null ? k.ir : !!p?.ir
+    const lastYear = k.lastYear != null
+      ? k.lastYear
+      : (!!p && !ir && (((p.sv ?? 0) + 1 >= maxServiceYears) || round === 1))
+    return {
+      name: k.name,
+      pos: k.pos ?? p?.pos ?? null,
+      autoRound: k.autoRound ?? auto[k.name] ?? null,
+      round,
+      adjusted: !!k.adjusted,
+      ir,
+      lastYear,
+    }
+  })
+}

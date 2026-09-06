@@ -344,3 +344,7 @@ select:focus-visible,.tab:focus-visible,button:focus-visible,.prow:focus-visible
   .section-head h2{font-size:23px;}
   .slip{top:110px;}
 }
+
+/* Season badge turns green once the season's keepers are published. */
+.season.is-set{border-color:var(--accent);color:var(--ink);}
+.season.is-set i{background:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent);}

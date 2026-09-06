@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { initials, ordinal } from '../engine/keeper.js'
+import { initials, ordinal, normalizeDeclaration } from '../engine/keeper.js'
 import { firebaseEnabled, loadPublishedDeclarations } from '../firebase.js'
 
 /**
@@ -36,7 +36,7 @@ export default function Selections({ data }) {
 
   const liveTeams = live?.teams
     ? data.teamOrder
-        .map(o => [o, (live.teams[o]?.keepers) || []])
+        .map(o => [o, normalizeDeclaration(live.teams[o], data.teams[o], data.meta.maxServiceYears)])
         .filter(([, ks]) => ks.length)
     : []
 
@@ -53,7 +53,9 @@ export default function Selections({ data }) {
         </div>
         <div className="filters" style={{ margin: 0 }}>
           <select value={year} onChange={e => setYear(e.target.value)} aria-label="Select season">
-            <option value={planning}>{planning} — not yet declared</option>
+            <option value={planning}>
+              {planning}{live ? ' — official keepers' : live === undefined ? '' : ' — not yet declared'}
+            </option>
             {years.map(y => (
               <option key={y} value={y}>
                 {y} season{Number(y) < data.meta.firstSleeperSeason ? ' — archive' : ''}
