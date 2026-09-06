@@ -24,24 +24,28 @@ export default function Admin({ data }) {
   const [sel, setSel] = useState({})
   // owner -> { playerName: round }  manual round adjustments
   const [ovr, setOvr] = useState({})
+  // owner -> { playerName: boolean }  manual final-year overrides
+  const [lastOvr, setLastOvr] = useState({})
   const [pubStatus, setPubStatus] = useState('draft')
   const [publishedAt, setPublishedAt] = useState(null)
   const [dirty, setDirty] = useState({})
 
   const season = data.meta.season
+  const maxSv = data.meta.maxServiceYears ?? 2
 
   useEffect(() => {
     if (!user) return
     loadDeclarations(season).then(d => {
-      const s = {}, o = {}
+      const s = {}, o = {}, l = {}
       Object.entries(d.teams || {}).forEach(([owner, entry]) => {
         const keepers = readSaved(entry)
         s[owner] = keepers.map(k => k.name)
         keepers.forEach(k => {
           if (k.adjusted && k.round != null) (o[owner] = o[owner] || {})[k.name] = k.round
+          if (k.lastYearAdjusted) (l[owner] = l[owner] || {})[k.name] = !!k.lastYear
         })
       })
-      setSel(s); setOvr(o)
+      setSel(s); setOvr(o); setLastOvr(l)
       setPubStatus(d.status || 'draft')
       setPublishedAt(d.publishedAt || null)
     }).catch(e => setError(String(e.message || e)))
@@ -70,10 +74,22 @@ export default function Admin({ data }) {
       const noCapital = Object.entries(final)
         .filter(([, r]) => r != null && !(team.cap && team.cap[r]))
         .map(([n, r]) => ({ name: n, round: r }))
-      out[owner] = { team, auto, final, result, dupes, noCapital, names }
+      // Rule 3 (service years) + rule 5 (kept at a 1st) decide whether a
+      // keeper can be kept AGAIN next season. Rule 6 exempts IR players.
+      const lastAuto = {}, lastFinal = {}
+      names.forEach(n => {
+        const p = team.players.find(x => x.n === n)
+        const r = final[n]
+        const auto0 = !!p && !p.ir &&
+          (((p.sv ?? 0) + 1 >= maxSv) || r === 1)
+        lastAuto[n] = auto0
+        const manual = lastOvr[owner]?.[n]
+        lastFinal[n] = manual != null ? manual : auto0
+      })
+      out[owner] = { team, auto, final, result, dupes, noCapital, names, lastAuto, lastFinal }
     })
     return out
-  }, [data, sel, ovr])
+  }, [data, sel, ovr, lastOvr, maxSv])
 
   const toggle = (owner, name) => {
     setSel(prev => {
@@ -85,6 +101,21 @@ export default function Admin({ data }) {
     })
     setOvr(prev => {
       const t = { ...(prev[owner] || {}) }; delete t[name]
+      return { ...prev, [owner]: t }
+    })
+    setLastOvr(prev => {
+      const t = { ...(prev[owner] || {}) }; delete t[name]
+      return { ...prev, [owner]: t }
+    })
+    setDirty(d => ({ ...d, [owner]: true }))
+  }
+
+  const toggleLast = (owner, name, autoVal) => {
+    setLastOvr(prev => {
+      const t = { ...(prev[owner] || {}) }
+      const cur = t[name] != null ? t[name] : autoVal
+      if (!cur === autoVal) delete t[name]   // back to auto
+      else t[name] = !cur
       return { ...prev, [owner]: t }
     })
     setDirty(d => ({ ...d, [owner]: true }))
@@ -102,6 +133,7 @@ export default function Admin({ data }) {
 
   const resetTeam = (owner) => {
     setOvr(prev => ({ ...prev, [owner]: {} }))
+    setLastOvr(prev => ({ ...prev, [owner]: {} }))
     setDirty(d => ({ ...d, [owner]: true }))
   }
 
@@ -115,6 +147,9 @@ export default function Admin({ data }) {
         autoRound: c.auto[n] ?? null,
         round: c.final[n] ?? null,
         adjusted: manual != null,
+        ir: !!p?.ir,
+        lastYear: !!c.lastFinal[n],
+        lastYearAdjusted: lastOvr[owner]?.[n] != null,
       }
     })
     setStatus(`Saving ${owner}…`)
@@ -226,6 +261,7 @@ export default function Admin({ data }) {
               {totalDeclared} of {data.teamOrder.length} teams have keepers declared for {season}.
               {published && publishedAt && ` Published ${new Date(publishedAt).toLocaleString()}.`}
               {anyDirty && ' You have unsaved team changes.'}
+              {published && ' Edits stay open — saving a team updates the league view immediately.'}
             </p>
           </div>
           <button className="btn" disabled={busy} onClick={() => publish(published ? 'draft' : 'published')}>
@@ -268,9 +304,26 @@ export default function Admin({ data }) {
                       const manual = ovr[owner]?.[n]
                       const auto = c.auto[n]
                       const isAdj = manual != null && manual !== auto
+                      const last = c.lastFinal[n]
+                      const lastAuto = c.lastAuto[n]
+                      const lastAdj = (lastOvr[owner]?.[n]) != null
+                      const kp = c.team.players.find(x => x.n === n)
                       return (
                         <div className="at-row" key={n}>
                           <span className="at-name">{n}</span>
+                          <button type="button"
+                            className={`lastyr${last ? ' is-last' : ''}${lastAdj ? ' is-manual' : ''}`}
+                            onClick={() => toggleLast(owner, n, lastAuto)}
+                            title={
+                              (last
+                                ? 'Cannot be kept again next season'
+                                : 'Can be kept again next season') +
+                              (kp?.ir ? ' — on IR, so this year does not count (rule 6)' : '') +
+                              (lastAdj ? ' · manually set' : ` · auto (${lastAuto ? 'final year' : 'keepable'})`) +
+                              ' — click to change'
+                            }>
+                            {last ? 'final yr' : 'keepable'}
+                          </button>
                           <span className="at-auto" title="Round calculated by the rules engine">
                             auto {auto != null ? ordinal(auto) : '—'}
                           </span>
@@ -282,7 +335,13 @@ export default function Admin({ data }) {
                         </div>
                       )
                     })}
-                    {Object.keys(ovr[owner] || {}).length > 0 && (
+                    {c.names.some(n => c.lastFinal[n]) && (
+                      <p className="at-lastnote">
+                        Cannot be kept again in {season + 1}:{' '}
+                        <b>{c.names.filter(n => c.lastFinal[n]).join(', ')}</b>
+                      </p>
+                    )}
+                    {(Object.keys(ovr[owner] || {}).length > 0 || Object.keys(lastOvr[owner] || {}).length > 0) && (
                       <button className="linkish" onClick={() => resetTeam(owner)}>Reset to auto</button>
                     )}
                   </div>

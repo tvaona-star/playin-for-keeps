@@ -98,6 +98,10 @@ export default function Selections({ data }) {
                       {k.pos && <span className="pos" data-p={k.pos}>{k.pos}</span>}
                       <span className="kn">
                         <span className="pn" title={k.name}>{k.name}</span>
+                        {k.ir && <span className="pill info tiny" title="On IR — this year does not count (rule 6)">IR</span>}
+                        {k.lastYear && (
+                          <span className="pill bad tiny" title={`Cannot be kept again in ${Number(planning) + 1}`}>final yr</span>
+                        )}
                         {k.adjusted && (
                           <span className="pill gold tiny" title={`Commissioner adjusted from ${k.autoRound != null ? ordinal(k.autoRound) : 'auto'}`}>adj</span>
                         )}

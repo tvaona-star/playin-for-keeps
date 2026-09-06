@@ -52,6 +52,11 @@ const initials = (n) => {
   return (p[0][0] + (p[1] ? p[1][0] : '')).toUpperCase()
 }
 
+/** Managers sort alphabetically by first name everywhere on the site. */
+const byFirstName = (a, b) =>
+  a.split(/\s+/)[0].localeCompare(b.split(/\s+/)[0], 'en', { sensitivity: 'base' })
+    || a.localeCompare(b)
+
 async function main () {
   console.log('Fetching Sleeper data…')
   const league = await J(`/league/${CUR_LEAGUE}`)
@@ -259,10 +264,13 @@ async function main () {
   const historyOut = {}
   Object.entries(history).forEach(([year, byShort]) => {
     if (year.startsWith('_')) return
-    historyOut[year] = {}
+    const named = {}
     Object.entries(byShort).forEach(([short, list]) => {
-      historyOut[year][owners.shortToName[short] || short] = list
+      named[owners.shortToName[short] || short] = list
     })
+    // managers stay alphabetical by first name in the archive too
+    historyOut[year] = {}
+    Object.keys(named).sort(byFirstName).forEach(n => { historyOut[year][n] = named[n] })
   })
 
   const out = {
@@ -277,7 +285,7 @@ async function main () {
       faRound: FA_ROUND,
       maxServiceYears: MAX_SERVICE_YEARS,
     },
-    teamOrder: owners.teamOrder.filter(n => teams[n]),
+    teamOrder: Object.keys(teams).sort(byFirstName),
     teams,
     history: historyOut,
     champions,
