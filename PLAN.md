@@ -354,3 +354,11 @@ allow writes only for that authenticated UID. Everyone else is read-only.
 - RESOLVED: league founded 2017; history is two-source (Sleeper API +
   spreadsheet seed).
 - REMAINING before build: which season the league moved onto Sleeper.
+
+## Decision: no Keeper Board page (2026-09-06)
+
+The league-wide roster grid from the original mockup was intentionally NOT
+built. The My Team planner already has a manager dropdown, so any team's full
+roster with costs and eligibility is viewable one team at a time. A separate
+Board would add only "all ten at once" plus cross-league sorting — not worth
+the extra surface. Do not re-propose it.
