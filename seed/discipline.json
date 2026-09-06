@@ -18,6 +18,20 @@
         "rounds": 1,
         "target": "latest_round",
         "reason": "Rule 10 penalty — 2025 season"
+      },
+      {
+        "owner": "Erwin Bensan",
+        "type": "keeper_round",
+        "rounds": 1,
+        "target": "latest_round",
+        "reason": "Rule 10 penalty — 2025 season"
+      },
+      {
+        "owner": "Kyle Matthews",
+        "type": "keeper_round",
+        "rounds": 1,
+        "target": "latest_round",
+        "reason": "Rule 10 penalty — 2025 season"
       }
     ]
   }
