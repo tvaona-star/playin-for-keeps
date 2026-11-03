@@ -190,7 +190,9 @@ export default function Planner({ data }) {
                       {picks.length
                         ? picks.map((p, i) => (
                             <span key={i} className={`og${p.self ? '' : ' acq'}`}>
-                              {p.label}{p.self ? '' : ` ‹${p.o}`}
+                              {data.meta.pickNumbersKnown
+                                ? <>{p.label}{p.self ? '' : ` ‹${p.o}`}</>
+                                : (p.self ? 'own' : `‹${p.o}`)}
                             </span>
                           ))
                         : <span className="og none">no pick</span>}
@@ -205,8 +207,9 @@ export default function Planner({ data }) {
               <span><b style={{ color: 'var(--gold)', fontSize: 11 }}>‹AB</b> acquired</span>
             </div>
             <p style={{ fontSize: 11, color: 'var(--ink-3)', margin: '9px 0 0' }}>
-              Exact pick shown as round.pick (e.g. 2.04). Rounds with two picks list
-              both; gold marks a pick acquired by trade.
+              {data.meta.pickNumbersKnown
+                ? 'Exact pick shown as round.pick (e.g. 2.04). Rounds with two picks list both; gold marks a pick acquired by trade.'
+                : `Draft order for ${data.meta.season} isn't drawn yet, so these are rounds rather than exact picks. Rounds with two picks list both; gold marks a pick acquired by trade.`}
             </p>
           </div>
         </aside>
